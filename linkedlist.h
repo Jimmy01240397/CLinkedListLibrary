@@ -71,7 +71,7 @@ void lnlistqsort(linkedlist alldata, int cont, int (*cmp)(const void*, const voi
     {
         if(cmp(a[1], nowhigh[1]) < 0)
         {
-        	lnlistswap(a, nows);
+            lnlistswap(a, nows);
             nows = lnlistget(nows, 0);
             s++;
         }

@@ -64,10 +64,10 @@ void lnlistswap(linkedlistdata a, linkedlistdata b)
 }
 
 void lnlistqsort(linkedlist alldata, int cont, int (*cmp)(const void*, const void*)) {
-	if(cont <= 1) return;
-	int s = 0;
-	linkedlistdata nows = lnlistget(alldata, s), nowhigh = lnlistget(alldata, cont - 1);
-	for(linkedlistdata a = nows; a; a = lnlistget(a, 0))
+    if(cont <= 1) return;
+    int s = 0;
+    linkedlistdata nows = lnlistget(alldata, s), nowhigh = lnlistget(alldata, cont - 1);
+    for(linkedlistdata a = nows; a; a = lnlistget(a, 0))
     {
         if(cmp(a[1], nowhigh[1]) < 0)
         {

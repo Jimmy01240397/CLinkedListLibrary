@@ -1,62 +1,102 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-typedef void* linkedlist;
-typedef void** linkedlistdata;
+typedef void** linkedlist;
 
-linkedlist newlinkedlist()
+linkedlist lnlistget(linkedlist alldata, int index)
 {
-    void** ans = malloc(sizeof(void*));
-    *ans = NULL;
-    return ans;
-}
-
-linkedlistdata lnlistget(linkedlist alldata, int index)
-{
-    if(index < 0) return alldata;
-    alldata = *(void**)alldata;
+    int check = index < 0;
+    index = abs(index);
     for(int i = 0; i < index; i++)
     {
         if(!alldata) return NULL;
-        alldata = ((void**)alldata)[0];
+        alldata = ((linkedlist)alldata)[check ? 0 : 2];
     }
+    return alldata;
+}
+
+linkedlist lnlisthead(linkedlist alldata)
+{
+    linkedlist head = alldata;
+    for(; alldata[0] && head != alldata[0]; alldata = alldata[0]){}
+    return alldata;
+}
+
+linkedlist lnlistend(linkedlist alldata)
+{
+    linkedlist head = alldata;
+    for(; alldata[2] && head != alldata[2]; alldata = alldata[2]){}
     return alldata;
 }
 
 int lnlistlen(linkedlist alldata)
 {
     int len;
-    alldata = *(void**)alldata;
-    for(len = 0; alldata; alldata = ((void**)alldata)[0], len++){}
+    linkedlist head = alldata, checkhead = NULL;
+    for(len = 0; alldata && alldata != checkhead; alldata = alldata[2], checkhead = head, len++){}
     return len;
 }
 
-void lnlistadd(linkedlist alldata, void* data)
+linkedlist lnlistadd(linkedlist* alldata, void* data)
 {
-    void** nowdata = malloc(sizeof(void*) * 2);
+    void** nowdata = malloc(sizeof(void*) * 3);
     nowdata[0] = NULL;
     nowdata[1] = data;
-    for(; ((void**)alldata)[0]; alldata = ((void**)alldata)[0]){}
-    ((void**)alldata)[0] = nowdata;
+    nowdata[2] = NULL;
+    if(*alldata)
+    {
+        linkedlist now = *alldata;
+        linkedlist head = now;
+        for(; now[2] && head != now[2]; now = now[2]){}
+        now[2] = nowdata;
+        nowdata[0] = now;
+    }
+    else
+    {
+        *alldata = nowdata;
+    }
+    return nowdata;
 }
 
-void lnlistremove(linkedlist alldata, int index)
+linkedlist lnlistremove(linkedlist* alldata, int index)
 {
-    void *a = lnlistget(alldata, index - 1), *b = a ? ((void**)a)[0] : NULL, *c = b ? ((void**)b)[0] : NULL;
-    ((void**)a)[0] = c;
+    linkedlist now = *alldata;
+    linkedlist a = lnlistget(now, index - 1), b = a ? a[2] : lnlistget(now, index), c = b ? b[2] : lnlistget(now, index + 1);
+    if(a) a[2] = c;
+    if(c) c[0] = a;
+    if(now == b) *alldata = c;
     if(b) free(b);
+    return c;
 }
 
-void lnlistinsert(linkedlist alldata, void* data, int index)
+linkedlist lnlistinsert(linkedlist* alldata, void* data, int index)
 {
-    void *a = lnlistget(alldata, index - 1), *b = a ? ((void**)a)[0] : NULL;
-    void** nowdata = malloc(sizeof(void*) * 2);
-    nowdata[0] = b;
+    linkedlist a = lnlistget(*alldata, index - 1), b = a ? a[2] : lnlistget(*alldata, index);
+    linkedlist nowdata = malloc(sizeof(void*) * 3);
+    nowdata[0] = a;
     nowdata[1] = data;
-    ((void**)a)[0] = nowdata;
+    nowdata[2] = b;
+    if(a) a[2] = nowdata;
+    if(b) b[0] = nowdata;
+    if(!index) *alldata = nowdata;
+    return nowdata;
 }
 
-void lnlistswap(linkedlistdata a, linkedlistdata b)
+void lnlistloopup(linkedlist alldata)
+{
+    linkedlist head = lnlisthead(alldata), mend = lnlistend(alldata);
+    if(head) head[0] = mend;
+    if(mend) mend[2] = head;
+}
+
+void lnlistdisloopup(linkedlist alldata)
+{
+    linkedlist mend = lnlistend(alldata);
+    if(alldata) alldata[0] = NULL;
+    if(mend) mend[2] = NULL;
+}
+
+void lnlistswap(linkedlist a, linkedlist b)
 {
     void* tmp = a[1];
     a[1] = b[1];
@@ -66,17 +106,18 @@ void lnlistswap(linkedlistdata a, linkedlistdata b)
 void lnlistqsort(linkedlist alldata, int cont, int (*cmp)(const void*, const void*)) {
     if(cont <= 1) return;
     int s = 0;
-    linkedlistdata nows = lnlistget(alldata, s), nowhigh = lnlistget(alldata, cont - 1);
-    for(linkedlistdata a = nows; a; a = lnlistget(a, 0))
+    linkedlist nows = lnlistget(alldata, s), nowhigh = lnlistget(alldata, cont - 1);
+    for(linkedlist a = nows; a; a = lnlistget(a, 1))
     {
         if(cmp(a[1], nowhigh[1]) < 0)
         {
             lnlistswap(a, nows);
-            nows = lnlistget(nows, 0);
+            nows = lnlistget(nows, 1);
             s++;
         }
     }
     lnlistswap(nowhigh, nows);
+    nows = lnlistget(nows, 1);
     lnlistqsort(alldata, s, cmp);
     lnlistqsort(nows, cont - (s + 1), cmp);
 }

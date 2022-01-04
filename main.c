@@ -9,21 +9,22 @@ int cmp(int* a, int* b)
 
 int main()
 {
-    linkedlist alldata = newlinkedlist();
+    linkedlist alldata = NULL;
     int cont;
     scanf("%d", &cont);
     for(int i = 0; i < cont; i++)
     {
         int* nowdata = malloc(sizeof(int));
         scanf("%d", nowdata);
-        lnlistadd(alldata, nowdata);
+        alldata = lnlistadd(&alldata, nowdata);
     }
+    alldata = lnlisthead(alldata);
     for(int i = 0; i < cont; i++)
     {
         printf("%d ", *(int *)lnlistget(alldata, i)[1]);
     }
     printf("\n");
-    lnlistremove(alldata, 1);
+    lnlistremove(&alldata, 0);
     cont = lnlistlen(alldata);
     for(int i = 0; i < cont; i++)
     {
@@ -35,7 +36,7 @@ int main()
     {
         int* nowdata = malloc(sizeof(int));
         scanf("%d", nowdata);
-        lnlistinsert(alldata, nowdata, 1);
+        lnlistinsert(&alldata, nowdata, 0);
     }
     cont = lnlistlen(alldata);
     for(int i = 0; i < cont; i++)
@@ -48,5 +49,34 @@ int main()
     {
         printf("%d ", *(int *)lnlistget(alldata, i)[1]);
     }
+    printf("\n");
+    linkedlist test = lnlistget(alldata, 3);
+    for(int i = 0; i >= -3; i--)
+    {
+        printf("%d ", *(int *)lnlistget(test, i)[1]);
+    }
+    printf("\n");
+    printf("%d %d\n", *(int *)lnlisthead(test)[1], *(int *)lnlistend(test)[1]);
+    lnlistloopup(test);
+    printf("%d %d\n", *(int *)lnlisthead(test)[1], *(int *)lnlistend(test)[1]);
+    cont = lnlistlen(test);
+    for(int i = 0; i < cont; i++)
+    {
+        printf("%d ", *(int *)lnlistget(test, i)[1]);
+    }
+    printf("%d ", *(int *)lnlistget(test, cont)[1]);
+    printf("\n");
+    printf("%d ", lnlistlen(alldata));
+    printf("\n");
+    lnlistdisloopup(test);
+    cont = lnlistlen(test);
+    for(int i = 0; i < cont; i++)
+    {
+        printf("%d ", *(int *)lnlistget(test, i)[1]);
+    }
+    printf("\n");
+    printf("%d ", lnlistlen(alldata));
+    printf("\n");
+
     return 0;
 }

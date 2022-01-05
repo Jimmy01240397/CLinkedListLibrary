@@ -64,7 +64,8 @@ linkedlist lnlistremove(linkedlist* alldata, int index)
     linkedlist a = lnlistget(now, index - 1), b = a ? a[2] : lnlistget(now, index), c = b ? b[2] : lnlistget(now, index + 1);
     if(a) a[2] = c;
     if(c) c[0] = a;
-    if(now == b) *alldata = c;
+    if(now == b || (a == NULL && c == NULL)) *alldata = c;
+    if(a == b && b == c) *alldata = NULL;
     if(b) free(b);
     return c;
 }
